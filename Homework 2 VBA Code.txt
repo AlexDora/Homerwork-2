@@ -1,0 +1,138 @@
+Sub Tarea2()
+
+    
+    
+    'Nombrar variables
+    Dim ticker_name As String
+    Dim Volume As Double
+    Dim Summary As Long
+    Dim OpenPrice As Double
+    Dim ClosedPrice As Double
+    Dim Percentage As Double
+    Dim Variance As Double
+    Dim MaxValue As Double
+    Dim MinValue As Double
+    Dim GreatestValue As Double
+    Dim MaxTicket As String
+    Dim MinTicket As String
+    Dim MaxVolTicker As String
+    
+    'Aplicar macro para todas las páginas
+    For Each ws In Worksheets
+    ws.Select
+       
+    
+    'Títulos de las columnas
+    Range("I1").Value = "Ticker"
+    Range("L1").Value = "Volume"
+    Range("J1").Value = "Yearly Change"
+    Range("K1").Value = "Percent Change"
+    Range("n2").Value = "Greatest % Increase"
+    Range("n3").Value = "Greatest % Decrease"
+    Range("n4").Value = "Greatest Total Volume"
+    Range("p1").Value = "Value"
+    Range("o1").Value = "Ticker"
+   
+    'Asignar para la ultima fila
+    
+    lastrow = Cells(Rows.Count, 1).End(xlUp).Row
+
+
+    'Para continuar uno por uno los rangos de I y J
+    
+    Summary = 2
+    'Determinar el valor inicial del patron
+    OpenPrice = Cells(2, 3).Value
+
+    
+    
+
+    For i = 2 To lastrow
+
+    'Establecer la condición de si son diferentes los productos
+        If Cells(i + 1, 1).Value <> Cells(i, 1) Then
+    
+    'Si se cumple pasa...
+        ticker_name = Cells(i, 1).Value
+        Volume = Volume + Cells(i, 7).Value
+        ClosedPrice = Cells(i, 6).Value
+        Variance = ClosedPrice - OpenPrice
+        'Quitar error por si el valor Inicial o Final es 0
+        If ClosedPrice = 0 Or OpenPrice = 0 Then
+            Percentage = 0
+        Else
+            Percentage = 1
+            Percentage = (Variance / OpenPrice)
+            
+        End If
+        
+        'Donde los valores serán arrojados
+        Range("I" & Summary).Value = ticker_name
+        Range("L" & Summary).Value = Volume
+        Range("J" & Summary).Value = Variance
+            'Formato de color
+            If Range("J" & Summary).Value > 0 Then
+                Range("J" & Summary).Interior.ColorIndex = 4
+            Else
+                Range("J" & Summary).Interior.ColorIndex = 3
+            End If
+        Range("K" & Summary).Value = Format(Percentage, "Percent")
+        OpenPrice = Cells(i + 1, 3).Value
+        
+    'Para continuar uno por uno los rangos de I y J
+        Summary = Summary + 1
+
+    'Resetear el volumen en el caso de que sean diferentes.
+        Volume = 0
+ 
+        Else
+    
+    'Hacer la suma de los volumenes, si son diferentes los volumenes "Volume" ya será 0, si no tendrá el valor anterior asignado.
+    
+        Volume = Volume + Cells(i, 7).Value
+
+        End If
+        
+            'Asigno Inicio de Patron
+
+
+        
+    Next i
+    
+        'Para sacar el promedio de los incremendos o decrementos.
+        MaxValue = Cells(2, 11).Value
+        MinValue = Cells(2, 11).Value
+        GreatestValue = Cells(2, 12).Value
+    
+    For i = 2 To lastrow
+    
+
+    'Determinar Max Crecimiento
+    If Cells(i, 11).Value > MaxValue Then
+        MaxValue = Cells(i, 11).Value
+        MaxTicket = Cells(i, 9).Value
+    End If
+    'Determinar Min Crecimiento
+    If Cells(i, 11).Value < MinValue Then
+        MinValue = Cells(i, 11).Value
+        MinTicket = Cells(i, 9).Value
+    End If
+    'Determinar Maximo Volumen
+    If Cells(i, 12).Value > GreatestValue Then
+        GreatestValue = Cells(i, 12).Value
+        MaxVolTicker = Cells(i, 9).Value
+    End If
+    'Donde se arrojarán los valores
+        Cells(2, 16).Value = Format(MaxValue, "Percent")
+        Cells(3, 16).Value = Format(MinValue, "Percent")
+        Cells(4, 16).Value = GreatestValue
+        Cells(2, 15).Value = MaxTicket
+        Cells(3, 15).Value = MinTicket
+        Cells(4, 15).Value = MaxVolTicker
+    
+    Next i
+    
+    Next ws
+       
+
+End Sub
